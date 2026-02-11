@@ -1,11 +1,15 @@
 from flask import Flask
-import os
+from redis import Redis
 
 app = Flask(__name__)
+# Connect to Redis container named 'redis'
+redis = Redis(host='redis', port=6379)
 
 @app.route('/')
 def hello():
-    return "<h1>Hello from Docker! My Name is Container.</h1>"
+    # Increase counter every refresh
+    count = redis.incr('hits')
+    return f"<h1>Hello! You have seen this page {count} times.</h1>"
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
